@@ -22,9 +22,9 @@ namespace testAzure.Controllers
                     return Ok(tickets);
                 }
             }
-            catch
+            catch(Exception ex)
             {
-                return BadRequest();
+                return BadRequest(new { message = ex.Message });
             }
 
         }

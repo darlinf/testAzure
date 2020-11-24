@@ -18,7 +18,7 @@ namespace testAzure.Controllers
             {
                 using (var context = new project1databaseContext())
                 {
-                    var tickets = context.Tickets.ToList();
+                    var tickets = context.Tickets.Where(x => x.Status == "Used").OrderBy(x => x.Date).ToList();
                     return Ok(tickets);
                 }
             }
@@ -28,6 +28,7 @@ namespace testAzure.Controllers
             }
 
         }
+
         [HttpGet("RedeemTicket/{code}")]
         public IActionResult ticket(int code)
         {
@@ -40,15 +41,36 @@ namespace testAzure.Controllers
                     ticket.Date = DateTime.Now;
                     context.Update(ticket);
                     context.SaveChanges();
-
-                    var tickets = context.Tickets.Where(x => x.Status == "Used").OrderBy(x => x.Date).ToList();
                     
-                    return Ok(tickets);
+                    return Ok();
                 }
             }
-            catch
+            catch (Exception ex)
             {
-                return BadRequest();
+                return BadRequest(new { message = ex.Message });
+            }
+
+        }
+
+        [HttpGet("GetByCode/{code}")]
+        public IActionResult GetByCode(int code)
+        {
+            try
+            {
+                using (var context = new project1databaseContext())
+                {
+                    var ticket = context.Tickets.Where(x => x.Code == code).FirstOrDefault();
+
+                    if(ticket == null) return BadRequest(new { message = "El ticket no ha sido encontrado" });
+
+                    if(ticket.Status == "Used") return BadRequest(new { message = "El ticket ya ha sido usado" });
+
+                    return Ok(ticket);
+                }
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(new { message = ex.Message });
             }
 
         }

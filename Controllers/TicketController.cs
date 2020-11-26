@@ -18,7 +18,7 @@ namespace testAzure.Controllers
             {
                 using (var context = new project1databaseContext())
                 {
-                    var tickets = context.Tickets.Where(x => x.Status == "Used").OrderBy(x => x.Date).ToList();
+                    var tickets = context.Tickets.Where(x => x.Status == "Used").OrderByDescending(x => x.Date).Take(10).ToList();
                     return Ok(tickets);
                 }
             }
